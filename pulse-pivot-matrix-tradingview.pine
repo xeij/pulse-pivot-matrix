@@ -1,0 +1,154 @@
+//@version=5
+indicator("Pulse Pivot Matrix", "PPM", overlay=true, max_boxes_count=500, max_lines_count=500)
+
+// Input Parameters
+ema1_period = input.int(8, "EMA 1 Period", minval=1, maxval=500)
+ema2_period = input.int(13, "EMA 2 Period", minval=1, maxval=500)
+ema3_period = input.int(21, "EMA 3 Period", minval=1, maxval=500)
+ema4_period = input.int(48, "EMA 4 Period", minval=1, maxval=500)
+ema5_period = input.int(200, "EMA 5 Period", minval=1, maxval=500)
+
+show_conviction_arrows = input.bool(true, "Show Conviction Arrows")
+show_bias_candles = input.bool(true, "Show Bias Candles")
+bias_ema_period = input.int(21, "Bias EMA Period", minval=1, maxval=500)
+show_ribbon_cloud = input.bool(true, "Show Ribbon Cloud")
+show_pullback_zone = input.bool(true, "Show 13 EMA Pullback Zone")
+
+// Color Inputs
+bullish_primary_color = input.color(color.green, "Bullish Primary Color")
+bullish_secondary_color = input.color(color.blue, "Bullish Secondary Color")
+bearish_primary_color = input.color(color.red, "Bearish Primary Color")
+bearish_secondary_color = input.color(color.orange, "Bearish Secondary Color")
+neutral_color = input.color(color.gray, "Neutral Color")
+
+// EMA Calculations
+ema1 = ta.ema(close, ema1_period)
+ema2 = ta.ema(close, ema2_period)
+ema3 = ta.ema(close, ema3_period)
+ema4 = ta.ema(close, ema4_period)
+ema5 = ta.ema(close, ema5_period)
+
+// Bias EMA for candle coloring
+bias_ema = ta.ema(close, bias_ema_period)
+
+// Trend Direction Logic
+bullish_trend = ema1 > ema2 and ema2 > ema3 and ema3 > ema4
+bearish_trend = ema1 < ema2 and ema2 < ema3 and ema3 < ema4
+neutral_trend = not bullish_trend and not bearish_trend
+
+// EMA Crossover Detection
+ema13_48_bullish_cross = ta.crossover(ema2, ema4)
+ema13_48_bearish_cross = ta.crossunder(ema2, ema4)
+ema8_21_bullish_cross = ta.crossover(ema1, ema3)
+ema8_21_bearish_cross = ta.crossunder(ema1, ema3)
+ema21_200_bullish_cross = ta.crossover(ema3, ema5)
+ema21_200_bearish_cross = ta.crossunder(ema3, ema5)
+
+// Dynamic Color Functions
+get_trend_color_primary() =>
+    bullish_trend ? bullish_primary_color : bearish_trend ? bearish_primary_color : neutral_color
+
+get_trend_color_secondary() =>
+    bullish_trend ? bullish_secondary_color : bearish_trend ? bearish_secondary_color : neutral_color
+
+// Plot EMAs with Dynamic Colors
+plot_ema8 = plot(ema1, "EMA 8", color=get_trend_color_primary(), linewidth=2)
+plot_ema13 = plot(ema2, "EMA 13", color=get_trend_color_secondary(), linewidth=2)
+
+// Biased 21 EMA (against 8 EMA cross)
+ema21_color = ema1 > ema3 ? bullish_primary_color : bearish_primary_color
+plot_ema21 = plot(ema3, "EMA 21 (Biased)", color=ema21_color, linewidth=3)
+
+plot_ema48 = plot(ema4, "EMA 48", color=get_trend_color_secondary(), linewidth=2)
+
+// Biased 200 EMA (against 21 EMA cross)
+ema200_color = ema3 > ema5 ? bullish_primary_color : bearish_primary_color
+plot_ema200 = plot(ema5, "EMA 200 (Biased)", color=ema200_color, linewidth=4)
+
+// Ribbon Folding Visual (Fill between EMAs)
+fill(plot_ema8, plot_ema13, 
+     color=show_ribbon_cloud ? color.new(get_trend_color_primary(), 85) : na, 
+     title="EMA 8-13 Ribbon")
+
+fill(plot_ema13, plot_ema21,
+     color=show_ribbon_cloud ? color.new(get_trend_color_secondary(), 90) : na,
+     title="EMA 13-21 Ribbon")
+
+// 13 EMA Pullback Overlap Zone
+pullback_zone_high = ema2 * 1.005
+pullback_zone_low = ema2 * 0.995
+
+plot(show_pullback_zone and bullish_trend ? pullback_zone_high : na, 
+     "Pullback Zone High", color=color.new(color.green, 70), style=plot.style_circles, linewidth=1)
+plot(show_pullback_zone and bullish_trend ? pullback_zone_low : na, 
+     "Pullback Zone Low", color=color.new(color.green, 70), style=plot.style_circles, linewidth=1)
+
+// Conviction Arrows (13/48 EMA Crossover)
+plotshape(show_conviction_arrows and ema13_48_bullish_cross, 
+          "Bullish Conviction", shape.triangleup, location.belowbar, 
+          bullish_primary_color, size=size.normal)
+
+plotshape(show_conviction_arrows and ema13_48_bearish_cross, 
+          "Bearish Conviction", shape.triangledown, location.abovebar, 
+          bearish_primary_color, size=size.normal)
+
+// Bias Candles
+bias_candle_color = close > bias_ema ? bullish_primary_color : bearish_primary_color
+barcolor(show_bias_candles ? bias_candle_color : na, title="Bias Candles")
+
+// Support/Resistance Levels based on EMA confluence
+support_level = bullish_trend ? math.min(ema3, ema4) : na
+resistance_level = bearish_trend ? math.max(ema3, ema4) : na
+
+plot(support_level, "Dynamic Support", color=bullish_secondary_color, 
+     style=plot.style_line, linewidth=2, display=display.none)
+plot(resistance_level, "Dynamic Resistance", color=bearish_secondary_color, 
+     style=plot.style_line, linewidth=2, display=display.none)
+
+// Trend Status Table
+if barstate.islast
+    var table trend_table = table.new(position.top_right, 2, 6, 
+                                     bgcolor=color.new(color.white, 80), 
+                                     border_width=1, border_color=color.black)
+    
+    trend_status = bullish_trend ? "BULLISH" : bearish_trend ? "BEARISH" : "NEUTRAL"
+    trend_color = bullish_trend ? bullish_primary_color : bearish_trend ? bearish_primary_color : neutral_color
+    
+    table.cell(trend_table, 0, 0, "Trend:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 0, trend_status, text_color=trend_color, text_size=size.normal)
+    
+    table.cell(trend_table, 0, 1, "EMA 8:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 1, str.tostring(ema1, "#.##"), text_color=color.black, text_size=size.small)
+    
+    table.cell(trend_table, 0, 2, "EMA 13:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 2, str.tostring(ema2, "#.##"), text_color=color.black, text_size=size.small)
+    
+    table.cell(trend_table, 0, 3, "EMA 21:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 3, str.tostring(ema3, "#.##"), text_color=color.black, text_size=size.small)
+    
+    table.cell(trend_table, 0, 4, "EMA 48:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 4, str.tostring(ema4, "#.##"), text_color=color.black, text_size=size.small)
+    
+    table.cell(trend_table, 0, 5, "EMA 200:", text_color=color.black, text_size=size.small)
+    table.cell(trend_table, 1, 5, str.tostring(ema5, "#.##"), text_color=color.black, text_size=size.small)
+
+// Alerts
+alertcondition(ema13_48_bullish_cross, "Bullish Conviction Signal", "13 EMA crossed above 48 EMA - Bullish conviction signal")
+alertcondition(ema13_48_bearish_cross, "Bearish Conviction Signal", "13 EMA crossed below 48 EMA - Bearish conviction signal")
+alertcondition(bullish_trend and not bullish_trend[1], "Bullish Trend Start", "Bullish trend has started")
+alertcondition(bearish_trend and not bearish_trend[1], "Bearish Trend Start", "Bearish trend has started")
+alertcondition(ema8_21_bullish_cross, "EMA 8/21 Bullish Cross", "EMA 8 crossed above EMA 21")
+alertcondition(ema8_21_bearish_cross, "EMA 8/21 Bearish Cross", "EMA 8 crossed below EMA 21")
+alertcondition(ema21_200_bullish_cross, "EMA 21/200 Bullish Cross", "EMA 21 crossed above EMA 200")
+alertcondition(ema21_200_bearish_cross, "EMA 21/200 Bearish Cross", "EMA 21 crossed below EMA 200")
+
+// Tooltip information
+tooltip_text = "Pulse Pivot Matrix\n" +
+               "Trend: " + trend_status + "\n" +
+               "EMA 8: " + str.tostring(ema1, "#.##") + "\n" +
+               "EMA 13: " + str.tostring(ema2, "#.##") + "\n" +
+               "EMA 21: " + str.tostring(ema3, "#.##") + "\n" +
+               "EMA 48: " + str.tostring(ema4, "#.##") + "\n" +
+               "EMA 200: " + str.tostring(ema5, "#.##")
+
+plot(na, "Info", color=na, display=display.none, tooltip=tooltip_text) 
