@@ -1,4 +1,5 @@
 //@version=5
+//Copyright (C) 2025 Shaya Arya
 indicator("Pulse Pivot Matrix Pro", "PPM Pro", overlay=true, max_boxes_count=500, max_lines_count=500)
 
 // === SETTINGS ===
@@ -15,10 +16,10 @@ show_slow_cloud = input.bool(true, "Show Slow Cloud (Pivot/Slow)")
 cloud_transparency = input.int(75, "Cloud Transparency", minval=0, maxval=95)
 
 // Cloud Colors
-bullish_fast_color = input.color(color.new(color.lime, 0), "Bullish Fast Cloud")
-bearish_fast_color = input.color(color.new(color.red, 0), "Bearish Fast Cloud")
-bullish_slow_color = input.color(color.new(color.aqua, 0), "Bullish Slow Cloud") 
-bearish_slow_color = input.color(color.new(color.orange, 0), "Bearish Slow Cloud")
+bullish_fast_color = input.color(color.new(color.white, 0), "Bullish Fast Cloud")
+bearish_fast_color = input.color(color.new(#800020, 0), "Bearish Fast Cloud")
+bullish_slow_color = input.color(color.new(#FF1493, 0), "Bullish Slow Cloud") 
+bearish_slow_color = input.color(color.new(#F0F8FF, 0), "Bearish Slow Cloud")
 
 // EMA Line Settings
 show_fast_line = input.bool(false, "Show Fast EMA Line")
@@ -37,8 +38,8 @@ show_conviction_signals = input.bool(true, "Show Conviction Arrows")
 show_trend_candles = input.bool(true, "Show Trend Candles")
 trend_candle_ema = input.int(21, "Trend Candle EMA", minval=1, maxval=200)
 
-bullish_arrow_color = input.color(color.lime, "Bullish Arrow Color")
-bearish_arrow_color = input.color(color.fuchsia, "Bearish Arrow Color")
+bullish_arrow_color = input.color(color.white, "Bullish Arrow Color")
+bearish_arrow_color = input.color(#800020, "Bearish Arrow Color")
 
 // === TIMEFRAME LOGIC ===
 get_timeframe() =>
@@ -142,7 +143,7 @@ if barstate.islast
                                       border_width=1, border_color=color.gray)
     
     trend_status = overall_bullish ? "BULLISH" : overall_bearish ? "BEARISH" : "NEUTRAL"
-    trend_color = overall_bullish ? color.lime : overall_bearish ? color.red : color.gray
+    trend_color = overall_bullish ? color.white : overall_bearish ? #800020 : color.gray
     
     table.cell(status_table, 0, 0, "PPM Trend:", text_color=color.white, text_size=size.small)
     table.cell(status_table, 1, 0, trend_status, text_color=trend_color, text_size=size.normal)
@@ -152,11 +153,11 @@ if barstate.islast
     
     table.cell(status_table, 0, 2, "Fast/Pivot:", text_color=color.white, text_size=size.small) 
     fast_pivot_status = fast_ema > pivot_ema ? "BULL" : "BEAR"
-    table.cell(status_table, 1, 2, fast_pivot_status, text_color=fast_ema > pivot_ema ? color.lime : color.red, text_size=size.small)
+    table.cell(status_table, 1, 2, fast_pivot_status, text_color=fast_ema > pivot_ema ? color.white : #800020, text_size=size.small)
     
     table.cell(status_table, 0, 3, "Pivot/Slow:", text_color=color.white, text_size=size.small)
     pivot_slow_status = pivot_ema > slow_ema ? "BULL" : "BEAR" 
-    table.cell(status_table, 1, 3, pivot_slow_status, text_color=pivot_ema > slow_ema ? color.lime : color.red, text_size=size.small)
+    table.cell(status_table, 1, 3, pivot_slow_status, text_color=pivot_ema > slow_ema ? color.white : #800020, text_size=size.small)
 
 // === ALERTS ===
 alertcondition(bullish_conviction, "PPM Bullish Conviction", "PPM: Bullish conviction signal triggered")

@@ -1,4 +1,5 @@
-# Pulse Pivot Matrix Pro - ThinkOrSwim ThinkScript
+# Xeijs Pulse Pivot Matrix Pro - ThinkOrSwim ThinkScript
+# Copyright (C) 2025 Shaya Arya
 # Advanced Cloud-Based EMA System with Multi-Timeframe Analysis
 # Original Design for Enhanced Visual Trading Signals
 
@@ -77,10 +78,10 @@ def bullish_conviction = conviction_fast_ema crosses above conviction_slow_ema;
 def bearish_conviction = conviction_fast_ema crosses below conviction_slow_ema;
 
 # === COLOR DEFINITIONS ===
-DefineGlobalColor("bullish_fast", Color.LIME);
-DefineGlobalColor("bearish_fast", Color.RED);
-DefineGlobalColor("bullish_slow", Color.CYAN);
-DefineGlobalColor("bearish_slow", Color.ORANGE);
+DefineGlobalColor("bullish_fast", Color.WHITE);
+DefineGlobalColor("bearish_fast", CreateColor(128, 0, 32));
+DefineGlobalColor("bullish_slow", CreateColor(201, 171, 187));
+DefineGlobalColor("bearish_slow", CreateColor(222, 111, 138));
 DefineGlobalColor("conviction_fast", Color.LIGHT_GRAY);
 DefineGlobalColor("conviction_slow", Color.MAGENTA);
 DefineGlobalColor("pivot_line", Color.YELLOW);

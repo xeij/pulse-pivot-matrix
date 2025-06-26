@@ -128,8 +128,8 @@ To set up alerts:
 
 ## Files Included
 
-- `pulse-pivot-matrix-thinkorswim.ts` - ThinkorSwim ThinkScript version
-- `pulse-pivot-matrix-tradingview.pine` - TradingView Pine Script version
+- `pulse-pivot-matrix.ts` - ThinkorSwim ThinkScript version
+- `pulse-pivot-matrix.pine` - TradingView Pine Script version
 - `README.md` - This documentation file
 
 ## Tips for Best Results
