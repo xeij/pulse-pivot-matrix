@@ -17,9 +17,9 @@ cloud_transparency = input.int(75, "Cloud Transparency", minval=0, maxval=95)
 
 // Cloud Colors
 bullish_fast_color = input.color(color.new(color.white, 0), "Bullish Fast Cloud")
-bearish_fast_color = input.color(color.new(#800020, 0), "Bearish Fast Cloud")
-bullish_slow_color = input.color(color.new(#FF1493, 0), "Bullish Slow Cloud") 
-bearish_slow_color = input.color(color.new(#F0F8FF, 0), "Bearish Slow Cloud")
+bearish_fast_color = input.color(color.new(#66071F, 0), "Bearish Fast Cloud")
+bullish_slow_color = input.color(color.new(#EBD1DF, 0), "Bullish Slow Cloud") 
+bearish_slow_color = input.color(color.new(#FF1493, 0), "Bearish Slow Cloud")
 
 // EMA Line Settings
 show_fast_line = input.bool(false, "Show Fast EMA Line")
