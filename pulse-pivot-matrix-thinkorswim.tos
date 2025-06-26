@@ -1,0 +1,219 @@
+# Pulse Pivot Matrix Pro - ThinkOrSwim ThinkScript
+# Advanced Cloud-Based EMA System with Multi-Timeframe Analysis
+# Original Design for Enhanced Visual Trading Signals
+
+declare upper;
+
+# === INPUT PARAMETERS ===
+input timeframe_mode = {default "Current", "1min", "3min", "5min", "15min", "30min", "1hour", "4hour", "Day", "Week"};
+input fast_length = 8;
+input pivot_length = 21;
+input slow_length = 55;
+input conviction_fast = 13;
+input conviction_slow = 48;
+
+# Cloud Display Settings
+input show_fast_cloud = yes;
+input show_slow_cloud = yes;
+input cloud_transparency = 80;
+
+# EMA Line Display
+input show_fast_line = no;
+input show_pivot_line = yes;
+input show_slow_line = no;
+input show_conviction_lines = yes;
+
+# Feature Toggles
+input show_conviction_signals = yes;
+input show_trend_candles = yes;
+input trend_candle_ema = 21;
+input show_dynamic_levels = yes;
+
+# === TIMEFRAME LOGIC ===
+def tf_period;
+switch (timeframe_mode) {
+case "1min":
+    tf_period = AggregationPeriod.MIN;
+case "3min":
+    tf_period = AggregationPeriod.THREE_MIN;
+case "5min":
+    tf_period = AggregationPeriod.FIVE_MIN;
+case "15min":
+    tf_period = AggregationPeriod.FIFTEEN_MIN;
+case "30min":
+    tf_period = AggregationPeriod.THIRTY_MIN;
+case "1hour":
+    tf_period = AggregationPeriod.HOUR;
+case "4hour":
+    tf_period = AggregationPeriod.FOUR_HOURS;
+case "Day":
+    tf_period = AggregationPeriod.DAY;
+case "Week":
+    tf_period = AggregationPeriod.WEEK;
+default:
+    tf_period = GetAggregationPeriod();
+}
+
+# === EMA CALCULATIONS ===
+def tf_close = if timeframe_mode == timeframe_mode."Current" then close else close(period = tf_period);
+
+def fast_ema = ExpAverage(tf_close, fast_length);
+def pivot_ema = ExpAverage(tf_close, pivot_length);
+def slow_ema = ExpAverage(tf_close, slow_length);
+def conviction_fast_ema = ExpAverage(tf_close, conviction_fast);
+def conviction_slow_ema = ExpAverage(tf_close, conviction_slow);
+def trend_ema = ExpAverage(tf_close, trend_candle_ema);
+
+# === TREND ANALYSIS ===
+def overall_bullish = fast_ema > pivot_ema and pivot_ema > slow_ema;
+def overall_bearish = fast_ema < pivot_ema and pivot_ema < slow_ema;
+def trend_neutral = !overall_bullish and !overall_bearish;
+
+def fast_cloud_bullish = fast_ema >= pivot_ema;
+def slow_cloud_bullish = pivot_ema >= slow_ema;
+
+# === CONVICTION SIGNALS ===
+def bullish_conviction = conviction_fast_ema crosses above conviction_slow_ema;
+def bearish_conviction = conviction_fast_ema crosses below conviction_slow_ema;
+
+# === COLOR DEFINITIONS ===
+DefineGlobalColor("bullish_fast", Color.LIME);
+DefineGlobalColor("bearish_fast", Color.RED);
+DefineGlobalColor("bullish_slow", Color.CYAN);
+DefineGlobalColor("bearish_slow", Color.ORANGE);
+DefineGlobalColor("conviction_fast", Color.LIGHT_GRAY);
+DefineGlobalColor("conviction_slow", Color.MAGENTA);
+DefineGlobalColor("pivot_line", Color.YELLOW);
+DefineGlobalColor("fast_line", Color.WHITE);
+DefineGlobalColor("slow_line", Color.BLUE);
+
+# === EMA PLOTS ===
+plot FastEMA = if show_fast_line then fast_ema else Double.NaN;
+plot PivotEMA = if show_pivot_line then pivot_ema else Double.NaN;
+plot SlowEMA = if show_slow_line then slow_ema else Double.NaN;
+plot ConvictionFast = if show_conviction_lines then conviction_fast_ema else Double.NaN;
+plot ConvictionSlow = if show_conviction_lines then conviction_slow_ema else Double.NaN;
+
+# EMA Line Styling
+FastEMA.SetDefaultColor(GlobalColor("fast_line"));
+FastEMA.SetLineWeight(1);
+
+PivotEMA.SetDefaultColor(GlobalColor("pivot_line"));
+PivotEMA.SetLineWeight(2);
+
+SlowEMA.SetDefaultColor(GlobalColor("slow_line"));
+SlowEMA.SetLineWeight(1);
+
+ConvictionFast.SetDefaultColor(GlobalColor("conviction_fast"));
+ConvictionFast.SetLineWeight(1);
+
+ConvictionSlow.SetDefaultColor(GlobalColor("conviction_slow"));
+ConvictionSlow.SetLineWeight(1);
+
+# === INVISIBLE PLOTS FOR CLOUDS ===
+plot FastInvisible = fast_ema;
+plot PivotInvisible = pivot_ema;
+plot SlowInvisible = slow_ema;
+
+FastInvisible.SetDefaultColor(Color.CURRENT);
+FastInvisible.Hide();
+PivotInvisible.SetDefaultColor(Color.CURRENT);
+PivotInvisible.Hide();
+SlowInvisible.SetDefaultColor(Color.CURRENT);
+SlowInvisible.Hide();
+
+# === CLOUD FILLS ===
+# Fast Cloud (Fast EMA to Pivot EMA)
+AddCloud(if show_fast_cloud then FastInvisible else Double.NaN,
+         if show_fast_cloud then PivotInvisible else Double.NaN,
+         GlobalColor("bullish_fast"),
+         GlobalColor("bearish_fast"));
+
+# Slow Cloud (Pivot EMA to Slow EMA)  
+AddCloud(if show_slow_cloud then PivotInvisible else Double.NaN,
+         if show_slow_cloud then SlowInvisible else Double.NaN,
+         GlobalColor("bullish_slow"),
+         GlobalColor("bearish_slow"));
+
+# === CONVICTION ARROWS ===
+plot BullishArrow = if show_conviction_signals and bullish_conviction then low * 0.9985 else Double.NaN;
+plot BearishArrow = if show_conviction_signals and bearish_conviction then high * 1.0015 else Double.NaN;
+
+BullishArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+BullishArrow.SetDefaultColor(GlobalColor("bullish_fast"));
+BullishArrow.SetLineWeight(3);
+
+BearishArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+BearishArrow.SetDefaultColor(GlobalColor("bearish_fast"));
+BearishArrow.SetLineWeight(3);
+
+# === DYNAMIC SUPPORT/RESISTANCE ===
+def dynamic_support = if show_dynamic_levels and overall_bullish then Min(pivot_ema, slow_ema) else Double.NaN;
+def dynamic_resistance = if show_dynamic_levels and overall_bearish then Max(pivot_ema, slow_ema) else Double.NaN;
+
+plot Support = dynamic_support;
+plot Resistance = dynamic_resistance;
+
+Support.SetDefaultColor(Color.GREEN);
+Support.SetStyle(Curve.POINTS);
+Support.SetLineWeight(2);
+
+Resistance.SetDefaultColor(Color.RED);
+Resistance.SetStyle(Curve.POINTS);
+Resistance.SetLineWeight(2);
+
+# === TREND CANDLE COLORING ===
+def price_above_trend = close > trend_ema;
+def price_below_trend = close < trend_ema;
+def candle_bullish = open < close;
+def candle_bearish = open > close;
+def candle_doji = open == close;
+
+AssignPriceColor(
+    if !show_trend_candles then Color.CURRENT
+    else if price_above_trend and candle_bullish then GlobalColor("bullish_fast")
+    else if price_below_trend and candle_bullish then GlobalColor("bullish_slow") 
+    else if price_above_trend and candle_bearish then GlobalColor("bearish_slow")
+    else if price_below_trend and candle_bearish then GlobalColor("bearish_fast")
+    else if candle_doji then Color.GRAY
+    else Color.CURRENT
+);
+
+# === TREND STATUS LABELS ===
+AddLabel(yes,
+    if overall_bullish then "PPM: BULLISH TREND"
+    else if overall_bearish then "PPM: BEARISH TREND"
+    else "PPM: NEUTRAL TREND",
+    if overall_bullish then GlobalColor("bullish_fast")
+    else if overall_bearish then GlobalColor("bearish_fast")
+    else Color.GRAY);
+
+# Fast/Pivot Cloud Status
+AddLabel(show_fast_cloud,
+    "Fast Cloud: " + (if fast_cloud_bullish then "BULL" else "BEAR"),
+    if fast_cloud_bullish then GlobalColor("bullish_fast") else GlobalColor("bearish_fast"));
+
+# Pivot/Slow Cloud Status  
+AddLabel(show_slow_cloud,
+    "Slow Cloud: " + (if slow_cloud_bullish then "BULL" else "BEAR"),
+    if slow_cloud_bullish then GlobalColor("bullish_slow") else GlobalColor("bearish_slow"));
+
+# Timeframe Label
+AddLabel(timeframe_mode != timeframe_mode."Current",
+    "TF: " + 
+    (if timeframe_mode == timeframe_mode."1min" then "1m"
+     else if timeframe_mode == timeframe_mode."3min" then "3m"
+     else if timeframe_mode == timeframe_mode."5min" then "5m"
+     else if timeframe_mode == timeframe_mode."15min" then "15m"
+     else if timeframe_mode == timeframe_mode."30min" then "30m"
+     else if timeframe_mode == timeframe_mode."1hour" then "1h"
+     else if timeframe_mode == timeframe_mode."4hour" then "4h"
+     else if timeframe_mode == timeframe_mode."Day" then "D"
+     else if timeframe_mode == timeframe_mode."Week" then "W"
+     else "Current"),
+    Color.YELLOW);
+
+# === EMA VALUES LABEL ===
+AddLabel(show_conviction_lines,
+    "Fast:" + Round(fast_ema, 2) + " | Pivot:" + Round(pivot_ema, 2) + " | Slow:" + Round(slow_ema, 2),
+    Color.WHITE); 
