@@ -7,7 +7,7 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 
 ## Screenshot
 
-![Pulse Pivot Matrix Indicator in Action](Capture.jpg)
+![Pulse Pivot Matrix Indicator in Action](https://github.com/user-attachments/assets/237f1db7-c7f8-43ce-94c6-f3fb9cfa247e)
 
 *The Pulse Pivot Matrix indicator displaying the 5 EMA ribbon system with dynamic color coding, conviction arrows, and bias analysis on a live chart.*
 
