@@ -1,5 +1,4 @@
 # Pulse Pivot Matrix (PPM) Indicator
-# Copyright (C) 2025 Shaya Arya
 A sophisticated 5 EMA Ribbon system designed for trend analysis and support/resistance identification on both ThinkorSwim and TradingView platforms.
 
 ## Overview
@@ -8,7 +7,7 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 
 ## Features
 
-### 🎯 Core Components
+### Core Components
 
 - **5 EMA Ribbon System**: 8, 13, 21, 48, 200 period EMAs (customizable)
 - **Dynamic Color Coding**: 
@@ -23,7 +22,7 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 - **Bias Candles**: Color-coded candles relative to bias EMA
 - **13 EMA Pullback Zone**: Visual overlay for entry and hold opportunities
 
-### 📊 Visual Elements
+### Visual Elements
 
 - **Trend Status Display**: Real-time trend identification
 - **Support/Resistance Levels**: Dynamic levels based on EMA confluence
@@ -154,7 +153,7 @@ To set up alerts:
 
 ## Support
 
-For questions, suggestions, or bug reports, please create an issue in the repository or contact the developer.
+For questions, suggestions, or bug reports, please create an issue in the repository or contact me at shaya13arya@gmail.com
 
 ## Disclaimer
 
