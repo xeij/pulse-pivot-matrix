@@ -5,6 +5,12 @@ A sophisticated 5 EMA Ribbon system designed for trend analysis and support/resi
 
 The Pulse Pivot Matrix is an advanced technical indicator that combines multiple Exponential Moving Averages (EMAs) with dynamic color coding, conviction signals, and bias analysis to provide comprehensive trend analysis for traders.
 
+## Screenshot
+
+![Pulse Pivot Matrix Indicator in Action](Capture.jpg)
+
+*The Pulse Pivot Matrix indicator displaying the 5 EMA ribbon system with dynamic color coding, conviction arrows, and bias analysis on a live chart.*
+
 ## Features
 
 ### Core Components
