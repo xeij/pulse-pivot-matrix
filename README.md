@@ -1,11 +1,11 @@
 # Pulse Pivot Matrix (PPM) Indicator
-A sophisticated 5 EMA Ribbon system designed for trend analysis and support/resistance identification on both ThinkorSwim and TradingView platforms.
+5 EMA Ribbon system designed for trend analysis and support/resistance identification on both ThinkorSwim and TradingView platforms.
 
 ## Overview
 
 The Pulse Pivot Matrix is an advanced technical indicator that combines multiple Exponential Moving Averages (EMAs) with dynamic color coding, conviction signals, and bias analysis to provide comprehensive trend analysis for traders.
 
-## Screenshot
+## Bearish Case
 
 ![Pulse Pivot Matrix Indicator in Action](https://github.com/user-attachments/assets/237f1db7-c7f8-43ce-94c6-f3fb9cfa247e)
 
@@ -15,25 +15,7 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 
 ### Core Components
 
-- **5 EMA Ribbon System**: 8, 13, 21, 48, 200 period EMAs (customizable)
-- **Dynamic Color Coding**: 
-  - Bullish trend: Green + Blue
-  - Bearish trend: Red + Orange
-  - Neutral: Gray
-- **Ribbon Folding Visual**: Cloud fills between EMAs to show crossover relationships
-- **Conviction Arrows**: Based on 13/48 EMA crossover for high-probability signals
-- **Biased EMAs**: 
-  - 21 EMA biased against 8 EMA cross
-  - 200 EMA biased against 21 EMA cross
-- **Bias Candles**: Color-coded candles relative to bias EMA
-- **13 EMA Pullback Zone**: Visual overlay for entry and hold opportunities
-
-### Visual Elements
-
-- **Trend Status Display**: Real-time trend identification
-- **Support/Resistance Levels**: Dynamic levels based on EMA confluence
-- **EMA Values Table**: Current values for all EMAs
-- **Alert System**: Comprehensive alerts for all major signals
+This trading system uses a 5 EMA Ribbon System with 8, 13, 21, 48, and 200-period EMAs, which you can adjust as needed. It features dynamic color coding: white and light pink for bullish trends, red and pink for bearish ones. The ribbon folding visual creates a cloud between EMAs to highlight crossovers. Conviction arrows signal high-probability trades based on the 13/48 EMA crossover. The system includes biased EMAs—the 21 EMA tracks crosses with the 8 EMA, and the 200 EMA monitors the 21 EMA. Bias candles are color-coded based on the bias EMA, and the 13 EMA pullback zone marks entry or hold opportunities. Visually, you get a trend status display for real-time trend updates, support/resistance levels derived from EMA confluence, an EMA values table showing current EMA figures, and a thorough alert system for key signals.
 
 ## Installation
 
@@ -41,7 +23,7 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 
 1. Open ThinkorSwim platform
 2. Go to `Studies` → `Edit Studies` → `thinkScript Editor`
-3. Copy the contents of `pulse-pivot-matrix-thinkorswim.ts`
+3. Copy the contents of `pulse-pivot-matrix-thinkorswim.tos`
 4. Paste into the editor
 5. Save as "Pulse Pivot Matrix"
 6. Apply to your chart
@@ -76,90 +58,6 @@ The Pulse Pivot Matrix is an advanced technical indicator that combines multiple
 3. **Ribbon Compression**: 
    - When EMAs converge, expect a breakout
    - Direction determined by subsequent ribbon expansion
-
-### Risk Management
-
-- **Support/Resistance**: Use dynamic S/R levels for stop placement
-- **Bias Candles**: Quick visual confirmation of current bias
-- **EMA Cross Levels**: Use major EMA crosses as decision points
-
-## Customization Options
-
-### ThinkorSwim Settings
-- EMA periods (8, 13, 21, 48, 200)
-- Toggle conviction arrows
-- Toggle bias candles
-- Bias EMA period selection
-
-### TradingView Settings
-- All ThinkorSwim features plus:
-- Customizable colors for all elements
-- Toggle ribbon cloud display
-- Toggle pullback zone display
-- Comprehensive alert system
-
-## Alert Setup (TradingView)
-
-Available alerts include:
-- Bullish/Bearish conviction signals
-- Trend start notifications
-- EMA crossover alerts
-- Support/resistance level touches
-
-To set up alerts:
-1. Right-click on the chart
-2. Select "Add Alert"
-3. Choose "Pulse Pivot Matrix" as the condition
-4. Select your desired alert type
-5. Configure notification settings
-
-## Trading Strategies
-
-### Trend Following
-1. Wait for conviction arrow in trend direction
-2. Enter on pullback to 13 EMA zone
-3. Hold until opposite conviction arrow appears
-
-### Swing Trading
-1. Identify trend direction using ribbon alignment
-2. Look for EMA cross signals (8/21, 21/200)
-3. Use bias candles for confirmation
-4. Set stops below/above dynamic support/resistance
-
-### Scalping
-1. Use 13 EMA pullback zone for quick entries
-2. Exit on ribbon color change
-3. Focus on bias candle alignment
-
-## Files Included
-
-- `pulse-pivot-matrix.ts` - ThinkorSwim ThinkScript version
-- `pulse-pivot-matrix.pine` - TradingView Pine Script version
-- `README.md` - This documentation file
-
-## Tips for Best Results
-
-1. **Multi-Timeframe Analysis**: Use higher timeframes for trend bias, lower for entries
-2. **Volume Confirmation**: Combine with volume indicators for stronger signals
-3. **Market Context**: Consider overall market conditions and major S/R levels
-4. **Backtesting**: Test the indicator on historical data before live trading
-5. **Risk Management**: Always use proper position sizing and stop losses
-
-## Troubleshooting
-
-### ThinkorSwim Issues
-- Ensure all syntax is correct when copying
-- Check that all global colors are properly defined
-- Verify input parameters are within valid ranges
-
-### TradingView Issues
-- Make sure you're using Pine Script v5
-- Check for any compilation errors in the editor
-- Ensure all input values are within specified ranges
-
-## Support
-
-For questions, suggestions, or bug reports, please create an issue in the repository or contact me at shaya13arya@gmail.com
 
 ## Disclaimer
 
